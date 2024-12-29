@@ -22,7 +22,7 @@ app.get("/", (req, res) => {
 });
 
 
-app.use("/galxe", airdropRouter); 
+app.use("/airdrop", airdropRouter); 
 
 dbConnection();
 

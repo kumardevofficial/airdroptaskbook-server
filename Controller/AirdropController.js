@@ -26,7 +26,7 @@ const airdropController = async (req, res) => {
 const showAirdrop = async (req, res) => {
   try {
     const airdrops = await Airdrop.find(); 
-    res.json({ message: "Fetched airdrops successfully", data: airdrops });
+    res.json(airdrops);
   } catch (err) {
     res.status(500).json({ message: "Error fetching airdrops", error: err.message });
   }
