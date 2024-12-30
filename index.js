@@ -2,6 +2,8 @@ import express, { json } from 'express';
 import dotenv from "dotenv";
 import dbConnection from './DbConnection/dbconnection.js';
 import airdropRouter from './Routes/AirdropRoutes.js';
+import galxeRouter from './Routes/GalxeRoutes.js';
+import wailistRouter from './Routes/WaitlistRoutes.js';
 import cors from 'cors'
 
 
@@ -23,11 +25,13 @@ app.get("/", (req, res) => {
 
 
 app.use("/airdrop", airdropRouter); 
+app.use("/galxeairdrop", galxeRouter);
+app.use("/waitlistairdrop", wailistRouter);
 
 dbConnection();
 
-// app.listen(port, () => {
-//   console.log(`Server is running on http://localhost:${port}`);
-// });
+app.listen(port, () => {
+  console.log(`Server is running on http://localhost:${port}`);
+});
 
-export default app;
+// export default app;
