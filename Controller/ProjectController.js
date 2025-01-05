@@ -54,33 +54,43 @@ const createProject = async (req, res) => {
     }
   
     // Update a project by ID
-  const updateProject= async (req, res) => {
-    try {
-      const { id } = req.params;
-      const updatedData = req.body;
-
-      if (req.file) {
-        updatedData.projectImage = req.file.path; // Update image if a new file is uploaded
+    const updateProject = async (req, res) => {
+      try {
+        const { id } = req.params; 
+        const updatedData = req.body; 
+    
+        
+        if (req.file) {
+          updatedData.projectImage = req.file.path;
+        }
+    
+        
+        if (updatedData.tasks) {
+          updatedData.tasks = JSON.parse(updatedData.tasks); 
+        }
+    
+        
+        const updatedProject = await Project.findByIdAndUpdate(id, updatedData, {
+          new: true, 
+          runValidators: true, 
+        });
+    
+        
+        if (!updatedProject) {
+          return res.status(404).json({ message: "Project not found." });
+        }
+    
+        
+        res.status(200).json({
+          message: "Project updated successfully.",
+          project: updatedProject,
+        });
+      } catch (error) {
+        console.error("Error updating project:", error); 
+        res.status(500).json({ message: "Failed to update project.", error }); 
       }
-
-      const updatedProject = await Project.findByIdAndUpdate(id, updatedData, {
-        new: true,
-        runValidators: true,
-      });
-
-      if (!updatedProject) {
-        return res.status(404).json({ message: "Project not found." });
-      }
-
-      res.status(200).json({
-        message: "Project updated successfully.",
-        project: updatedProject,
-      });
-    } catch (error) {
-      console.error("Error updating project:", error);
-      res.status(500).json({ message: "Failed to update project.", error });
-    }
-  }
+    };
+    
 
   //   // Get a single project by ID
   const getProjectById = async (req, res) => {
