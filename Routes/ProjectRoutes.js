@@ -1,5 +1,5 @@
 import express from 'express';
-import  {createProject, getAllProjects}  from '../Controller/ProjectController.js';
+import  {createProject, getAllProjects, updateProject,getProjectById}  from '../Controller/ProjectController.js';
 import multer from 'multer';
 
 
@@ -17,5 +17,8 @@ const router = express.Router();
 
 router.post('/create-project', upload.single('projectImage'), createProject);
 router.get('/all-project', getAllProjects);
+router.post("/update", updateProject);
+router.get("/details/:id", getProjectById)
+
 
 export default router;

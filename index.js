@@ -4,7 +4,7 @@ import dbConnection from './DbConnection/dbconnection.js';
 import airdropRouter from './Routes/AirdropRoutes.js';
 import galxeRouter from './Routes/GalxeRoutes.js';
 import waitlistRouter from './Routes/WaitlistRoutes.js';
-import projectRouter from './Routes/ProjectRoutes.js';
+import projectRouter       from './Routes/ProjectRoutes.js';
 import cors from 'cors';
 import multer from 'multer';
 import { fileURLToPath } from 'url';

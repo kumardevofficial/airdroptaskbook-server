@@ -52,8 +52,55 @@ const createProject = async (req, res) => {
         res.status(500).json({ message: "Failed to fetch projects.", error });
       }
     }
+  
+    // Update a project by ID
+  const updateProject= async (req, res) => {
+    try {
+      const { id } = req.params;
+      const updatedData = req.body;
 
-export  {createProject, getAllProjects};
+      if (req.file) {
+        updatedData.projectImage = req.file.path; // Update image if a new file is uploaded
+      }
+
+      const updatedProject = await Project.findByIdAndUpdate(id, updatedData, {
+        new: true,
+        runValidators: true,
+      });
+
+      if (!updatedProject) {
+        return res.status(404).json({ message: "Project not found." });
+      }
+
+      res.status(200).json({
+        message: "Project updated successfully.",
+        project: updatedProject,
+      });
+    } catch (error) {
+      console.error("Error updating project:", error);
+      res.status(500).json({ message: "Failed to update project.", error });
+    }
+  }
+
+  //   // Get a single project by ID
+  const getProjectById = async (req, res) => {
+    try {
+      const { id } = req.params;
+      const project = await Project.findById(id);
+
+      if (!project) {
+        return res.status(404).json({ message: "Project not found." });
+      }
+
+      res.status(200).json(project);
+    } catch (error) {
+      console.error("Error fetching project:", error);
+      res.status(500).json({ message: "Failed to fetch project.", error });
+    }
+  }
+
+
+export  {createProject, getAllProjects, updateProject, getProjectById};
 
 
 // const projectController = {
