@@ -17,7 +17,7 @@ const router = express.Router();
 
 router.post('/create-project', upload.single('projectImage'), createProject);
 router.get('/all-project', getAllProjects);
-router.post("/update-project", updateProject);
+router.put("/update-project", updateProject);
 router.get("/details/:id", getProjectById)
 
 
