@@ -57,39 +57,45 @@ const createProject = async (req, res) => {
     const updateProject = async (req, res) => {
       try {
         const { id } = req.params; 
-        const updatedData = req.body; 
+        const updatedData = { ...req.body };
     
-        
+        // If a new image is provided, update the projectImage field
         if (req.file) {
           updatedData.projectImage = req.file.path;
         }
     
-        
-        if (updatedData.tasks) {
-          updatedData.tasks = JSON.parse(updatedData.tasks); 
+        // Parse tasks if provided as a string
+        if (updatedData.tasks && typeof updatedData.tasks === "string") {
+          updatedData.tasks = JSON.parse(updatedData.tasks);
         }
     
-        
-        const updatedProject = await Project.findByIdAndUpdate(id, updatedData, {
-          new: true, 
-          runValidators: true, 
+        // Remove undefined fields to only update provided data
+        Object.keys(updatedData).forEach((key) => {
+          if (updatedData[key] === undefined || updatedData[key] === null) {
+            delete updatedData[key];
+          }
         });
     
-        
+        // Update the project
+        const updatedProject = await Project.findByIdAndUpdate(id, updatedData, {
+          new: true, // Return the updated document
+          runValidators: true, // Enforce schema validations
+        });
+    
         if (!updatedProject) {
           return res.status(404).json({ message: "Project not found." });
         }
     
-        
         res.status(200).json({
           message: "Project updated successfully.",
           project: updatedProject,
         });
       } catch (error) {
-        console.error("Error updating project:", error); 
-        res.status(500).json({ message: "Failed to update project.", error }); 
+        console.error("Error updating project:", error);
+        res.status(500).json({ message: "Failed to update project.", error });
       }
     };
+    
     
 
   //   // Get a single project by ID
