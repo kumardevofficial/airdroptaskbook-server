@@ -4,7 +4,7 @@ import dbConnection from './DbConnection/dbconnection.js';
 import airdropRouter from './Routes/AirdropRoutes.js';
 import galxeRouter from './Routes/GalxeRoutes.js';
 import waitlistRouter from './Routes/WaitlistRoutes.js';
-import projectRouter       from './Routes/ProjectRoutes.js';
+import projectRouter from './Routes/ProjectRoutes.js';
 import cors from 'cors';
 // import { fileURLToPath } from 'url';
 // import { dirname, join } from 'path';
@@ -18,15 +18,15 @@ const app = express();
 // const __dirname = dirname(__filename);
 
 // Middleware
-app.use(express.json());
+app.use(express.json()); // Parses JSON bodies
+app.use(express.urlencoded({ extended: true })); // Parses URL-encoded bodies
 app.use(
   cors({
-    origin: '*',
-    methods: 'GET,POST,PUT,DELETE',
-    allowedHeaders: 'Content-Type,Authorization',
+    origin: '*', // Allow all origins; update this for better security in production
+    methods: 'GET,POST,PUT,DELETE', // Allowed HTTP methods
+    allowedHeaders: 'Content-Type,Authorization', // Allowed headers
   })
 );
-
 
 // Routes
 app.get('/', (req, res) => {
