@@ -42,8 +42,8 @@ app.use('/project', projectRouter);
 dbConnection();
 
 // Start Server
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
-});
+// app.listen(port, () => {
+//   console.log(`Server is running on http://localhost:${port}`);
+// });
 
-// export default app;
+export default app;
