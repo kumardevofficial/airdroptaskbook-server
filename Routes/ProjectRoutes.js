@@ -16,7 +16,11 @@ import multer from 'multer';
 
 const router = express.Router();
 
-const upload = multer({ dest: 'uploads/' });
+// const upload = multer({ dest: 'uploads/' });
+const upload = multer({
+  storage: multer.memoryStorage(), // In-memory storage
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB limit
+});
 
 router.post('/create-project', upload.single('projectImage'), createProject);
 router.get('/all-project', getAllProjects);

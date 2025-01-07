@@ -1,7 +1,5 @@
 import Project from "../Model/ProjectSchema.js";
 import { uploadToCloudinary } from "../DbConnection/Cloudinary.js";
-import cloudinary from 'cloudinary';
-
 
 
 const createProject = async (req, res) => {
@@ -15,42 +13,48 @@ const createProject = async (req, res) => {
       tasks,
     } = req.body;
 
-    // Validate and handle image upload
-    if (!req.file) {
-      return res.status(400).json({ message: "Project image is required." });
+    // Validate request data
+    if (!projectName || !projectLink || !req.file || !req.file.buffer) {
+      return res.status(400).json({ message: "Project name, link, and image are required." });
     }
 
-    // Upload image to Cloudinary (Assuming you have a separate function for this)
-    const result = await uploadToCloudinary(req.file.path);
-
-    if (!result || !result.url) {
+    // Upload image to Cloudinary using buffer
+    const result = await uploadToCloudinary(req.file.buffer);
+    if (!result || !result.secure_url) {
       return res.status(500).json({ message: "Failed to upload image to Cloudinary." });
     }
 
-    const projectImage = result.url; // Use the Cloudinary URL
+    // Prepare tasks (Parse JSON string to array)
+    let parsedTasks;
+    try {
+      parsedTasks = JSON.parse(tasks);
+    } catch (error) {
+      return res.status(400).json({ message: "Invalid tasks format. Must be valid JSON." });
+    }
 
-    // Create a new project document
+    // Save the project to the database
     const newProject = new Project({
       projectName,
-      projectImage, // Save the Cloudinary image URL
+      projectImage: result.secure_url, // Cloudinary Image URL
       projectLink,
       xlink,
       discordLink,
       telegramLink,
-      tasks: JSON.parse(tasks), // Parse tasks from JSON
+      tasks: parsedTasks,
     });
 
     const savedProject = await newProject.save();
-
     res.status(201).json({
       message: "Project created successfully.",
       project: savedProject,
     });
+
   } catch (error) {
     console.error("Error creating project:", error);
     res.status(500).json({ message: "Failed to create project.", error: error.message });
   }
 };
+
 
 
  const getAllProjects = async (req, res) => {

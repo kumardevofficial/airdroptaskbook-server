@@ -1,8 +1,5 @@
 import { v2 as cloudinary } from 'cloudinary';
 import dotenv from 'dotenv';
-import fs from 'fs';
-
-
 
 dotenv.config();
 
@@ -12,12 +9,25 @@ cloudinary.config({
     api_secret: process.env.CLOUD_API_SECRET,
 });
 
-export const uploadToCloudinary = (filePath) => {
-    return new Promise((resolve, reject) => {
-        cloudinary.uploader.upload(filePath, (error, result) => {
-            fs.unlinkSync(filePath); // Remove file after upload
-            if (error) reject(error);
-            else resolve(result);
+export const uploadToCloudinary = async (fileBuffer) => {
+    if (!fileBuffer || fileBuffer.length === 0) {
+        throw new Error('File buffer is empty');
+    }
+
+    try {
+        const result = await new Promise((resolve, reject) => {
+            const uploadStream = cloudinary.uploader.upload_stream(
+                { resource_type: 'image' },
+                (error, result) => {
+                    if (error) reject(error);
+                    else resolve(result);
+                }
+            );
+            uploadStream.end(fileBuffer); // Ensure buffer is correctly sent
         });
-    });
+        return result;
+    } catch (error) {
+        console.error('Error uploading to Cloudinary:', error);
+        throw error;
+    }
 };
