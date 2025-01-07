@@ -23,6 +23,7 @@ const taskSchema = new mongoose.Schema({
 });
 
 const projectSchema = new mongoose.Schema({
+  imageUrl: { type: String, required: true },
   projectName: {
     type: String,
     required: true,

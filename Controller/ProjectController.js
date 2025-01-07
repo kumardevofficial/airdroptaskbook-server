@@ -1,47 +1,57 @@
 import Project from "../Model/ProjectSchema.js";
+import { uploadToCloudinary } from "../DbConnection/Cloudinary.js";
+import cloudinary from 'cloudinary';
+
 
 
 const createProject = async (req, res) => {
-    try {
-      const {
-        projectName,
-        projectLink,
-        xlink,
-        discordLink,
-        telegramLink,
-        tasks,
-      } = req.body;
+  try {
+    const {
+      projectName,
+      projectLink,
+      xlink,
+      discordLink,
+      telegramLink,
+      tasks,
+    } = req.body;
 
-      // Validate and handle image upload
-      if (!req.file) {
-        return res.status(400).json({ message: "Project image is required." });
-      }
-
-      const projectImage = req.file.path; // Assuming multer is used for handling file uploads
-
-      // Create a new project document
-      const newProject = new Project({
-        projectName,
-        projectImage,
-        projectLink,
-        xlink,
-        discordLink,
-        telegramLink,
-        tasks: JSON.parse(tasks), // Parse tasks from JSON
-      });
-
-      const savedProject = await newProject.save();
-
-      res.status(201).json({
-        message: "Project created successfully.",
-        project: savedProject,
-      });
-    } catch (error) {
-      console.error("Error creating project:", error);
-      res.status(500).json({ message: "Failed to create project.", error });
+    // Validate and handle image upload
+    if (!req.file) {
+      return res.status(400).json({ message: "Project image is required." });
     }
 
-}
+    // Upload image to Cloudinary (Assuming you have a separate function for this)
+    const result = await uploadToCloudinary(req.file.path);
+
+    if (!result || !result.url) {
+      return res.status(500).json({ message: "Failed to upload image to Cloudinary." });
+    }
+
+    const projectImage = result.url; // Use the Cloudinary URL
+
+    // Create a new project document
+    const newProject = new Project({
+      projectName,
+      projectImage, // Save the Cloudinary image URL
+      projectLink,
+      xlink,
+      discordLink,
+      telegramLink,
+      tasks: JSON.parse(tasks), // Parse tasks from JSON
+    });
+
+    const savedProject = await newProject.save();
+
+    res.status(201).json({
+      message: "Project created successfully.",
+      project: savedProject,
+    });
+  } catch (error) {
+    console.error("Error creating project:", error);
+    res.status(500).json({ message: "Failed to create project.", error: error.message });
+  }
+};
+
 
  const getAllProjects = async (req, res) => {
       try {
